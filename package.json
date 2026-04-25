@@ -1,0 +1,35 @@
+{
+  "name": "emilia_report_card",
+  "version": "1.0.0",
+  "main": "electron_main.js",
+  "scripts": {
+  "start": "electron .",
+  "build-win": "electron-builder --win",
+  "build-mac": "electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^41.2.2",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.emilia.reportcard",
+    "productName": "Emilia Report Card Maker",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron_main.js",
+      "start_django.sh",
+      "django_app/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    }
+  }
+}

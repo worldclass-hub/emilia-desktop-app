@@ -1,0 +1,3 @@
+@echo off
+cd django_app
+python manage.py runserver --noreload 127.0.0.1:8000

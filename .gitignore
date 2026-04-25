@@ -1,0 +1,25 @@
+# Build outputs (LARGE - don't include)
+release/
+dist/
+build/
+
+# Dependencies (LARGE - don't include)
+node_modules/
+venv/
+django_app/venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+
+# Database (optional - include if you want default data)
+# *.sqlite3
+# Django collected static files
+staticfiles/
+
+# Node modules
+node_modules/
+django_app/node_modules/

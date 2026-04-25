@@ -1,0 +1,1075 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emilia Foremost - Academic Excellence Portal</title>
+    <!-- Favicon - Emilia Logo -->
+<link rel="icon" type="image/x-icon" href="{% static 'img/emilia_logo_circle.png' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- ==================== ULTIMATE ANTI-OVERSCROLL SYSTEM ==================== -->
+    <style>
+        /* 1. FIXED POSITION BODY - Prevents any movement beyond boundaries */
+        html, body {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #dbeafe 100%);
+            margin: 0;
+            padding: 0;
+            touch-action: pan-y;
+            overscroll-behavior: none;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        
+        /* 2. SINGLE SCROLL CONTAINER - Only this can scroll internally */
+        .scroll-container {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #dbeafe 100%);
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* 3. PREVENT TOUCH OVERSCROLL */
+        .no-overscroll {
+            touch-action: pan-y;
+            overscroll-behavior: contain;
+        }
+        
+        /* 4. NO WHITE BORDERS EVER - Content completely contained */
+        .main-wrapper {
+            width: 100%;
+            min-height: 100%;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #dbeafe 100%);
+        }
+        
+        /* 5. MOBILE-SPECIFIC FIXES */
+        @media (max-width: 768px) {
+            .scroll-container {
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
+            }
+        }
+        
+        /* 6. SCROLL EDGE DETECTION HELPER */
+        .scroll-boundary {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #1e40af, #3b82f6);
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .scroll-boundary.visible {
+            opacity: 1;
+        }
+        
+        /* 7. FULL WIDTH FOOTER */
+        .full-width-footer {
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            background: linear-gradient(to right, #0f172a, #1f2937);
+        }
+        
+        /* 8. CONTENT CONTAINER - Main content area */
+        .content-container {
+            max-width: 7xl;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .content-container {
+                padding: 10px;
+            }
+        }
+        
+        /* 9. PRESERVED FUNCTIONALITY - Original styles continue below */
+        
+        /* ==================== ORIGINAL STYLES FROM CODE C ==================== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-hover {
+            transition: all 0.4s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .premium-glow {
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 1280px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(30, 64, 175, 0.3);
+        }
+        
+        /* Modal styles */
+        .modal-hidden {
+            display: none !important;
+        }
+        
+        .modal-visible {
+            display: flex !important;
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-card {
+                min-width: 0;
+            }
+        }
+        
+        /* Modal overlay fix */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 50;
+            background: rgba(0, 0, 0, 0.8);
+        }
+        
+        /* Main container - FIXED: Proper scroll containment */
+        .page-container {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Content wrapper - FIXED: Proper scroll management */
+        .content-wrapper {
+            flex: 1 0 auto;
+            width: 100%;
+            max-width: 100%;
+            position: relative;
+        }
+        
+        /* Footer - FIXED: Stays at bottom */
+        .page-footer {
+            flex-shrink: 0;
+            width: 100%;
+            position: relative;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        
+        /* FIXED: Prevent body scroll beyond footer */
+        body.no-scroll {
+            overflow: hidden;
+            height: 100%;
+            position: fixed;
+            width: 100%;
+        }
+    </style>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e40af',
+                        secondary: '#0f172a',
+                        accent: '#3b82f6',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        info: '#06b6d4',
+                        premium: '#8b5cf6',
+                        jss1: '#f97316',
+                        jss2: '#ea580c',
+                        jss3: '#dc2626'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px #3b82f6, 0 0 10px #3b82f6, 0 0 15px #3b82f6' },
+                            '100%': { boxShadow: '0 0 10px #3b82f6, 0 0 15px #3b82f6, 0 0 20px #3b82f6' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="no-overscroll">
+    <!-- ==================== ULTIMATE SCROLL RESTRICTION SYSTEM ==================== -->
+    <!-- Scroll Boundary Indicator -->
+    <div id="scrollBoundary" class="scroll-boundary"></div>
+    
+    <!-- 2. SINGLE SCROLL CONTAINER -->
+    <div class="scroll-container" id="scrollContainer">
+        <div class="main-wrapper">
+            <!-- Device Restriction Modal - Hidden by default -->
+            <div id="deviceModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 hidden">
+                <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8 transform transition-all duration-500">
+                    <div class="text-center mb-6">
+                        <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-exclamation-triangle text-red-500 text-3xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Device Not Supported</h2>
+                        <p class="text-gray-600">This application is optimized for desktop and laptop computers only. Please access this site using a PC for the best experience.</p>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <p class="text-sm text-blue-700 text-center"><i class="fas fa-info-circle mr-2"></i>For optimal performance and full functionality, please use a desktop computer or laptop with a screen width of at least 1024px.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div id="mainContent" class="flex-1 flex flex-col content-wrapper">
+                <!-- Premium Header -->
+                <header class="py-4 px-6 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-200 sticky top-0 z-40">
+                    <div class="max-w-7xl mx-auto flex justify-between items-center">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-14 h-14 bg-gradient-to-r from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-graduation-cap text-white text-2xl"></i>
+                            </div>
+                            <div>
+                                <h1 class="text-2xl font-bold text-secondary">Emilia Foremost</h1>
+                                <p class="text-sm text-gray-600 font-medium">Academic Excellence Portal</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-6">
+                            <div class="hidden md:flex items-center space-x-2 bg-blue-50 px-4 py-2 rounded-xl border border-blue-200">
+                                <i class="fas fa-user-shield text-primary text-lg"></i>
+                                <span class="font-bold text-gray-800 tracking-wide">ADMINISTRATOR</span>
+                            </div>
+                            
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center text-white shadow-md">
+                                    <i class="fas fa-user-shield text-sm"></i>
+                                </div>
+                                <div class="hidden md:block">
+                                    <p class="text-sm font-semibold text-gray-800">Admin User</p>
+                                    <p class="text-xs text-gray-500">Last login: Today</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Dashboard Section -->
+                <section class="py-8 px-4 sm:px-6 flex-1">
+                    <div class="max-w-7xl mx-auto w-full">
+                        <!-- Dashboard Header -->
+                        <div class="mb-10 text-center px-2">
+                            <h2 class="text-3xl sm:text-4xl font-bold text-secondary mb-3">Academic Management Dashboard</h2>
+                            <p class="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">Professional tools for academic excellence. Generate comprehensive report cards and performance analytics.</p>
+                        </div>
+
+                        <!-- Stats Overview -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10 px-2">
+                            <div class="stat-card">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-blue-100 text-sm font-medium">Total Students</p>
+                                        <h3 class="text-3xl font-bold mt-1">524</h3>
+                                    </div>
+                                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-users text-white text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center text-blue-100 text-sm">
+                                    <i class="fas fa-arrow-up mr-1"></i>
+                                    <span>12% increase this term</span>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-blue-100 text-sm font-medium">Classes</p>
+                                        <h3 class="text-3xl font-bold mt-1">24</h3>
+                                    </div>
+                                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-chalkboard text-white text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center text-blue-100 text-sm">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    <span>All classes active</span>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-blue-100 text-sm font-medium">Report Cards</p>
+                                        <h3 class="text-3xl font-bold mt-1">312</h3>
+                                    </div>
+                                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-file-alt text-white text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center text-blue-100 text-sm">
+                                    <i class="fas fa-sync-alt mr-1"></i>
+                                    <span>48 generated today</span>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-card">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <p class="text-blue-100 text-sm font-medium">Performance</p>
+                                        <h3 class="text-3xl font-bold mt-1">96.5%</h3>
+                                    </div>
+                                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-chart-line text-white text-xl"></i>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center text-blue-100 text-sm">
+                                    <i class="fas fa-trophy mr-1"></i>
+                                    <span>Academic excellence</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Senior Secondary Section -->
+                        <div class="mb-8 px-2">
+                            <div class="flex items-center mb-6">
+                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-user-graduate text-blue-600"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800">Senior Secondary Report Cards</h3>
+                            </div>
+                            <div class="dashboard-grid mb-8">
+                                <!-- SS1 Report Card -->
+                                <div class="glass-card rounded-2xl overflow-hidden card-hover">
+                                    <div class="h-2 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+                                    <div class="p-6">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <div class="flex items-center">
+                                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                                                    <i class="fas fa-user-graduate text-blue-600 text-xl"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 class="text-xl font-bold text-gray-800">SS1 Report Card</h3>
+                                                    <p class="text-sm text-gray-600">Senior Secondary 1</p>
+                                                </div>
+                                            </div>
+                                            <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                                                <span class="text-blue-600 font-bold">1</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-gray-600 mb-6">Complete academic performance report for Senior Secondary 1 students with detailed subject analysis.</p>
+                                        <div class="flex space-x-3">
+                                            <a href="{% url 'ss1_exam_result' %}" class="flex-1 py-3 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center">
+                                                <span>Generate</span>
+                                                <i class="fas fa-arrow-right ml-2"></i>
+                                            </a>
+                                            <button class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center hover:bg-blue-200 transition-colors">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SS2 Report Card -->
+                                <div class="glass-card rounded-2xl overflow-hidden card-hover">
+                                    <div class="h-2 bg-gradient-to-r from-green-500 to-green-600"></div>
+                                    <div class="p-6">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <div class="flex items-center">
+                                                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4">
+                                                    <i class="fas fa-user-graduate text-green-600 text-xl"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 class="text-xl font-bold text-gray-800">SS2 Report Card</h3>
+                                                    <p class="text-sm text-gray-600">Senior Secondary 2</p>
+                                                </div>
+                                            </div>
+                                            <div class="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center">
+                                                <span class="text-green-600 font-bold">2</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-gray-600 mb-6">Comprehensive academic evaluation for Senior Secondary 2 with WAEC/NECO preparation metrics.</p>
+                                        <div class="flex space-x-3">
+                                            <a href="{% url 'ss2_exam_result' %}" class="flex-1 py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors flex items-center justify-center">
+                                                <span>Generate</span>
+                                                <i class="fas fa-arrow-right ml-2"></i>
+                                            </a>
+                                            <button class="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center hover:bg-green-200 transition-colors">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- SS3 Report Card -->
+                                <div class="glass-card rounded-2xl overflow-hidden card-hover premium-glow">
+                                    <div class="h-2 bg-gradient-to-r from-purple-500 to-purple-600"></div>
+                                    <div class="p-6">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <div class="flex items-center">
+                                                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                                                    <i class="fas fa-user-graduate text-purple-600 text-xl"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 class="text-xl font-bold text-gray-800">SS3 Report Card</h3>
+                                                    <p class="text-sm text-gray-600">Senior Secondary 3</p>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <span class="bg-purple-100 text-purple-600 text-xs font-bold px-2 py-1 rounded mr-2">PREMIUM</span>
+                                                <div class="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center">
+                                                    <span class="text-purple-600 font-bold">3</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="text-gray-600 mb-6">Final year comprehensive report with university admission predictions and career guidance.</p>
+                                        <div class="flex space-x-3">
+                                            <a href="{% url 'ss3_exam_result' %}" class="flex-1 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-medium rounded-xl hover:from-purple-600 hover:to-purple-700 transition-colors flex items-center justify-center">
+                                                <span>Generate</span>
+                                                <i class="fas fa-arrow-right ml-2"></i>
+                                            </a>
+                                            <button class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center hover:bg-purple-200 transition-colors">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Junior Secondary Section -->
+                        <div class="mb-8 px-2">
+                            <div class="flex items-center mb-6">
+                                <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-user-friends text-orange-600"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-800">Junior Secondary Report Cards</h3>
+                            </div>
+                            <div class="dashboard-grid mb-8">
+                                <!-- JSS1 Report Card -->
+                                <div class="glass-card rounded-2xl overflow-hidden card-hover">
+                                    <div class="h-2 bg-gradient-to-r from-orange-500 to-orange-600"></div>
+                                    <div class="p-6">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <div class="flex items-center">
+                                                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mr-4">
+                                                    <i class="fas fa-user-friends text-orange-600 text-xl"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 class="text-xl font-bold text-gray-800">JSS1 Report Card</h3>
+                                                    <p class="text-sm text-gray-600">Junior Secondary 1</p>
+                                                </div>
+                                            </div>
+                                            <div class="w-10 h-10 bg-orange-50 rounded-full flex items-center justify-center">
+                                                <span class="text-orange-600 font-bold">1</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-gray-600 mb-6">Foundational skills assessment for Junior Secondary 1 with basic subject evaluation and behavioral tracking.</p>
+                                        <div class="flex space-x-3">
+                                            <a href="{% url 'jss1_exam_result' %}" class="flex-1 py-3 bg-orange-600 text-white font-medium rounded-xl hover:bg-orange-700 transition-colors flex items-center justify-center">
+                                                <span>Generate</span>
+                                                <i class="fas fa-arrow-right ml-2"></i>
+                                            </a>
+                                            <button class="w-12 h-12 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center hover:bg-orange-200 transition-colors">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- JSS2 Report Card -->
+                                <div class="glass-card rounded-2xl overflow-hidden card-hover">
+                                    <div class="h-2 bg-gradient-to-r from-amber-500 to-amber-600"></div>
+                                    <div class="p-6">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <div class="flex items-center">
+                                                <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mr-4">
+                                                    <i class="fas fa-user-friends text-amber-600 text-xl"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 class="text-xl font-bold text-gray-800">JSS2 Report Card</h3>
+                                                    <p class="text-sm text-gray-600">Junior Secondary 2</p>
+                                                </div>
+                                            </div>
+                                            <div class="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center">
+                                                <span class="text-amber-600 font-bold">2</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-gray-600 mb-6">Intermediate academic evaluation for Junior Secondary 2 with skill development tracking and progress analysis.</p>
+                                        <div class="flex space-x-3">
+                                            <a href="{% url 'jss2_exam_result' %}" class="flex-1 py-3 bg-amber-600 text-white font-medium rounded-xl hover:bg-amber-700 transition-colors flex items-center justify-center">
+                                                <span>Generate</span>
+                                                <i class="fas fa-arrow-right ml-2"></i>
+                                            </a>
+                                            <button class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center hover:bg-amber-200 transition-colors">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- JSS3 Report Card -->
+                                <div class="glass-card rounded-2xl overflow-hidden card-hover">
+                                    <div class="h-2 bg-gradient-to-r from-red-500 to-red-600"></div>
+                                    <div class="p-6">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <div class="flex items-center">
+                                                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mr-4">
+                                                    <i class="fas fa-user-friends text-red-600 text-xl"></i>
+                                                </div>
+                                                <div>
+                                                    <h3 class="text-xl font-bold text-gray-800">JSS3 Report Card</h3>
+                                                    <p class="text-sm text-gray-600">Junior Secondary 3</p>
+                                                </div>
+                                            </div>
+                                            <div class="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center">
+                                                <span class="text-red-600 font-bold">3</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-gray-600 mb-6">Final junior secondary evaluation with comprehensive skill assessment and secondary school transition preparation.</p>
+                                        <div class="flex space-x-3">
+                                            <a href="{% url 'jss3_exam_result' %}" class="flex-1 py-3 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 transition-colors flex items-center justify-center">
+                                                <span>Generate</span>
+                                                <i class="fas fa-arrow-right ml-2"></i>
+                                            </a>
+                                            <button class="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center hover:bg-red-200 transition-colors">
+                                                <i class="fas fa-cog"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Class Broadsheet Section -->
+                        <div class="glass-card rounded-2xl overflow-hidden mb-12 mx-2">
+                            <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 text-white">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="text-2xl font-bold">Class Broadsheets</h3>
+                                        <p class="opacity-90 mt-1">Generate comprehensive class performance analysis with ranking and insights</p>
+                                    </div>
+                                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
+                                        <i class="fas fa-chart-bar text-2xl"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Broadsheet Features</h4>
+                                        <ul class="space-y-3">
+                                            <li class="flex items-center">
+                                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                                    <i class="fas fa-chart-line text-green-600"></i>
+                                                </div>
+                                                <span class="text-gray-700">Class ranking and performance analysis</span>
+                                            </li>
+                                            <li class="flex items-center">
+                                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                                    <i class="fas fa-book-open text-green-600"></i>
+                                                </div>
+                                                <span class="text-gray-700">Subject-wise performance breakdown</span>
+                                            </li>
+                                            <li class="flex items-center">
+                                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                                    <i class="fas fa-exchange-alt text-green-600"></i>
+                                                </div>
+                                                <span class="text-gray-700">Comparative analysis with previous terms</span>
+                                            </li>
+                                            <li class="flex items-center">
+                                                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                                    <i class="fas fa-file-export text-green-600"></i>
+                                                </div>
+                                                <span class="text-gray-700">Export to PDF and Excel formats</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Quick Generate</h4>
+                                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                            <button class="py-3 bg-green-100 text-green-700 rounded-xl hover:bg-green-200 transition-colors font-medium">
+                                                JSS1
+                                            </button>
+                                            <button class="py-3 bg-green-100 text-green-700 rounded-xl hover:bg-green-200 transition-colors font-medium">
+                                                JSS2
+                                            </button>
+                                            <button class="py-3 bg-green-100 text-green-700 rounded-xl hover:bg-green-200 transition-colors font-medium">
+                                                JSS3
+                                            </button>
+                                            <button class="py-3 bg-green-100 text-green-700 rounded-xl hover:bg-green-200 transition-colors font-medium">
+                                                SS1
+                                            </button>
+                                            <button class="py-3 bg-green-100 text-green-700 rounded-xl hover:bg-green-200 transition-colors font-medium">
+                                                SS2
+                                            </button>
+                                            <button class="py-3 bg-green-100 text-green-700 rounded-xl hover:bg-green-200 transition-colors font-medium">
+                                                SS3
+                                            </button>
+                                        </div>
+                                        <a href="{% url 'staff_broadsheet' %}" id="broadsheetBtn" class="w-full mt-6 py-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors flex items-center justify-center">
+                                            <span>Access Broadsheet Portal</span>
+                                            <i class="fas fa-arrow-right ml-2"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="glass-card rounded-2xl p-6 mx-2">
+                            <h3 class="text-xl font-bold text-gray-800 mb-6">Recent Activity</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center p-4 bg-blue-50 rounded-xl">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                                        <i class="fas fa-file-alt text-blue-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-blue-800">SS1 Report Cards Generated</h4>
+                                        <p class="text-sm text-blue-600">25 report cards created for First Term 2023/2024</p>
+                                    </div>
+                                    <div class="text-sm text-gray-500">2 hours ago</div>
+                                </div>
+                                <div class="flex items-center p-4 bg-green-50 rounded-xl">
+                                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4">
+                                        <i class="fas fa-chart-bar text-green-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-green-800">JSS Broadsheet Updated</h4>
+                                        <p class="text-sm text-green-600">JSS2 broadsheet regenerated with new assessment data</p>
+                                    </div>
+                                    <div class="text-sm text-gray-500">Yesterday</div>
+                                </div>
+                                <div class="flex items-center p-4 bg-purple-50 rounded-xl">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                                        <i class="fas fa-user-graduate text-purple-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="font-semibold text-purple-800">SS3 Results Processed</h4>
+                                        <p class="text-sm text-purple-600">Final term results for SS3 students have been processed</p>
+                                    </div>
+                                    <div class="text-sm text-gray-500">2 days ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- FULL WIDTH FOOTER -->
+            <footer class="full-width-footer bg-gradient-to-r from-secondary to-gray-900 text-white py-12 px-4 sm:px-6">
+                <div class="max-w-7xl mx-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                        <div class="md:col-span-2">
+                            <div class="flex items-center space-x-4 mb-6">
+                                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-graduation-cap text-primary text-xl"></i>
+                                </div>
+                                <h3 class="text-2xl font-bold">Emilia Foremost</h3>
+                            </div>
+                            <p class="text-gray-300 max-w-md mb-6">Dedicated to academic excellence and innovative educational management solutions for modern institutions.</p>
+                            <div class="flex space-x-4">
+                                <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-primary transition-colors">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-primary transition-colors">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-primary transition-colors">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="#" class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center hover:bg-primary transition-colors">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                            <ul class="space-y-3">
+                                <li><a href="/admin/" class="text-gray-300 hover:text-white transition-colors flex items-center">
+                                    <i class="fas fa-tachometer-alt mr-2 text-sm"></i>
+                                    Dashboard
+                                </a></li>
+                                <li><a href="{% url 'about_us' %}" class="text-gray-300 hover:text-white transition-colors flex items-center">
+                                    <i class="fas fa-info-circle mr-2 text-sm"></i>
+                                    About Us
+                                </a></li>
+                                <li><a href="{% url 'academic_calendar' %}" class="text-gray-300 hover:text-white transition-colors flex items-center">
+                                    <i class="fas fa-calendar-alt mr-2 text-sm"></i>
+                                    Academic Calendar
+                                </a></li>
+                                <li><a href="{% url 'staff_logout' %}" class="text-gray-300 hover:text-white transition-colors flex items-center">
+                                    <i class="fas fa-sign-out-alt mr-2 text-sm"></i> Sign Out
+                                </a></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-semibold mb-4">Contact Info</h4>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-map-marker-alt text-primary mt-1 mr-3"></i>
+                                    <span class="text-gray-300">2, Olasupo Avenue, Off Adeyemi Street, Oke-Agbo, Ojo, Lagos</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-phone text-primary mt-1 mr-3"></i>
+                                    <span class="text-gray-300">+234 803 339 1900</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fas fa-envelope text-primary mt-1 mr-3"></i>
+                                    <span class="text-gray-300">emiliaforemost@gmail.com</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                        <p>&copy; 2023 Emilia Foremost. All rights reserved. | Designed for Excellence in Education</p>
+                    </div>
+                </div>
+            </footer>
+
+            <!-- Exam Report Card Modal -->
+            <div id="examModal" class="modal-overlay hidden flex items-center justify-center p-4">
+                <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+                    <div class="bg-gradient-to-r from-primary to-accent p-6 text-white flex justify-between items-center">
+                        <h3 class="text-2xl font-bold" id="modalTitle">Exam Report Card</h3>
+                        <button id="closeModal" class="text-white hover:text-gray-200 text-xl">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="p-6 overflow-y-auto max-h-[60vh]">
+                        <div id="modalContent">
+                            <!-- Content will be dynamically loaded here -->
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-200 p-4 flex justify-end space-x-3">
+                        <button class="py-2 px-6 bg-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-300 transition-colors flex items-center">
+                            <i class="fas fa-save mr-2"></i>
+                            <span>Save Draft</span>
+                        </button>
+                        <button id="printBtn" class="py-2 px-6 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors flex items-center">
+                            <i class="fas fa-print mr-2"></i>
+                            <span>Print</span>
+                        </button>
+                        <button id="downloadBtn" class="py-2 px-6 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-colors flex items-center">
+                            <i class="fas fa-download mr-2"></i>
+                            <span>Download PDF</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== ENHANCED SCROLL MANAGEMENT ====================
+        
+        function setupScrollManagement() {
+            const scrollContainer = document.getElementById('scrollContainer');
+            
+            // 1. FIXED POSITION BODY already set in CSS
+            
+            // 2. SINGLE SCROLL CONTAINER management
+            scrollContainer.style.overflowY = 'auto';
+            scrollContainer.style.overflowX = 'hidden';
+            
+            // 3. PREVENT TOUCH OVERSCROLL
+            if ('ontouchstart' in window) {
+                // iOS specific fixes
+                scrollContainer.style.WebkitOverflowScrolling = 'touch';
+                
+                // Prevent pull-to-refresh
+                document.addEventListener('touchmove', function(e) {
+                    if (scrollContainer.scrollTop <= 0) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+                
+                // Prevent rubber band effect
+                document.body.addEventListener('touchstart', function() {
+                    if (scrollContainer.scrollTop === 0) {
+                        scrollContainer.scrollTop = 1;
+                    }
+                    if (scrollContainer.scrollHeight - scrollContainer.scrollTop === scrollContainer.clientHeight) {
+                        scrollContainer.scrollTop = scrollContainer.scrollTop - 1;
+                    }
+                });
+            }
+            
+            // 6. SCROLL EDGE DETECTION
+            scrollContainer.addEventListener('scroll', function() {
+                // Show boundary indicator when near bottom
+                const distanceFromBottom = this.scrollHeight - (this.scrollTop + this.clientHeight);
+                const boundary = document.getElementById('scrollBoundary');
+                
+                if (distanceFromBottom <= 50 && distanceFromBottom > 0) {
+                    boundary.classList.add('visible');
+                } else {
+                    boundary.classList.remove('visible');
+                }
+                
+                // Prevent overscroll at top
+                if (this.scrollTop <= 0) {
+                    this.scrollTop = 1;
+                }
+                
+                // Prevent overscroll at bottom
+                if (this.scrollTop + this.clientHeight >= this.scrollHeight) {
+                    this.scrollTop = this.scrollHeight - this.clientHeight - 1;
+                }
+            });
+            
+            // 7. PRESERVED FUNCTIONALITY - All original functionality preserved
+        }
+
+        // Enhanced device detection and scroll management
+        document.addEventListener('DOMContentLoaded', function() {
+            const deviceModal = document.getElementById('deviceModal');
+            const examModal = document.getElementById('examModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+            const closeModal = document.getElementById('closeModal');
+            const printBtn = document.getElementById('printBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const scrollBoundary = document.getElementById('scrollBoundary');
+            
+            // Comprehensive device detection
+            function isPCOnly() {
+                const userAgent = navigator.userAgent.toLowerCase();
+                const screenWidth = window.screen.width;
+                
+                // Block iPad Pro and other tablets
+                const isiPadPro = /ipad/.test(userAgent) && 'ontouchend' in document;
+                const isTablet = /(tablet|ipad|playbook|silk)|(android(?!.*mobile))/i.test(userAgent);
+                const isMobile = /mobile|android|iphone|ipod|blackberry|opera mini|iemobile/i.test(userAgent);
+                
+                // Check for touch capabilities (tablets and mobiles have this)
+                const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+                
+                // Consider it a PC if:
+                // - Not mobile, not tablet, not iPad Pro
+                // - No touch capabilities OR screen is large enough (desktop typically)
+                // - User agent doesn't contain mobile/tablet indicators
+                const isPC = !isMobile && !isTablet && !isiPadPro && 
+                            screenWidth >= 1024 && 
+                            (!hasTouch || screenWidth > 1366);
+                
+                return isPC;
+            }
+            
+            // FIXED: Prevent modal background scroll
+            function disableBodyScroll() {
+                document.body.classList.add('no-scroll');
+                document.documentElement.style.overflow = 'hidden';
+            }
+            
+            function enableBodyScroll() {
+                document.body.classList.remove('no-scroll');
+                document.documentElement.style.overflow = '';
+            }
+            
+            // Show/hide content based on device
+            if (isPCOnly()) {
+                // Allow access for PC users
+                deviceModal.classList.add('hidden');
+                enableBodyScroll();
+                setupScrollManagement(); // Initialize scroll management
+            } else {
+                // Block everything else
+                deviceModal.classList.remove('hidden');
+                disableBodyScroll();
+                
+                // Prevent any interaction
+                document.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+                
+                document.addEventListener('keydown', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+                
+                document.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            }
+            
+            // Close modal function (keeping for other potential uses)
+            function closeExamModal() {
+                examModal.classList.add('hidden');
+                enableBodyScroll();
+            }
+            
+            // Event listeners (keeping for other potential uses)
+            closeModal.addEventListener('click', closeExamModal);
+            
+            examModal.addEventListener('click', function(e) {
+                if (e.target === examModal) {
+                    closeExamModal();
+                }
+            });
+            
+            printBtn.addEventListener('click', function() {
+                alert('Print functionality would be implemented here');
+            });
+            
+            downloadBtn.addEventListener('click', function() {
+                alert('PDF download functionality would be implemented here');
+            });
+            
+            // Continuously check screen size and device type
+            window.addEventListener('resize', function() {
+                if (isPCOnly()) {
+                    deviceModal.classList.add('hidden');
+                    enableBodyScroll();
+                    setupScrollManagement();
+                } else {
+                    deviceModal.classList.remove('hidden');
+                    disableBodyScroll();
+                }
+            });
+            
+            // Additional protection: prevent context menu
+            document.addEventListener('contextmenu', function(e) {
+                if (!isPCOnly()) {
+                    e.preventDefault();
+                }
+            });
+            
+            // FIXED: Prevent elastic scrolling on body
+            document.addEventListener('touchmove', function(e) {
+                if (!isPCOnly()) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            // FIXED: Handle wheel events to prevent overscroll
+            document.addEventListener('wheel', function(e) {
+                const scrollTop = document.querySelector('.scroll-container').scrollTop;
+                const scrollHeight = document.querySelector('.scroll-container').scrollHeight;
+                const clientHeight = document.querySelector('.scroll-container').clientHeight;
+                
+                // Check if we're at the bottom and trying to scroll down
+                if (e.deltaY > 0 && scrollTop + clientHeight >= scrollHeight - 10) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Check if we're at the top and trying to scroll up
+                if (e.deltaY < 0 && scrollTop <= 0) {
+                    e.preventDefault();
+                    return false;
+                }
+            }, { passive: false });
+            
+            // Additional safety: prevent keyboard scrolling
+            document.addEventListener('keydown', function(e) {
+                if (!isPCOnly()) {
+                    // Prevent arrow keys, space, page up/down
+                    if ([32, 33, 34, 37, 38, 39, 40].includes(e.keyCode)) {
+                        e.preventDefault();
+                    }
+                }
+            });
+            
+            // Extra protection: prevent any form of scrolling on blocked devices
+            if (!isPCOnly()) {
+                document.addEventListener('scroll', function(e) {
+                    e.preventDefault();
+                    window.scrollTo(0, 0);
+                }, { passive: false });
+                
+                // Also prevent mouse wheel
+                document.addEventListener('wheel', function(e) {
+                    e.preventDefault();
+                }, { passive: false });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1033 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title> EMilia Professional Broad Sheet</title>
+      <!-- Favicon - Emilia Logo -->
+<link rel="icon" type="image/x-icon" href="{% static 'img/emilia_logo_circle.png' %}">
+
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 0.5cm;
+    }
+
+    @media print {
+      #controls, #subject-controls {
+        display: none;
+      }
+      
+      /* Hide delete buttons and dropdowns in print */
+      .delete-btn, .subject-control, .no-print, .student-notification {
+        display: none !important;
+      }
+      
+      /* Show print-only elements */
+      .print-only {
+        display: inline-block !important;
+      }
+      
+      /* Clean table headers for print */
+      th.vertical {
+        border: 1px solid #000 !important;
+      }
+      
+      /* Optimized column widths for print with larger fonts */
+      th:first-child, td:first-child {
+        width: 40px !important;
+        min-width: 40px !important;
+        max-width: 40px !important;
+        font-size: 14px !important;
+      }
+      
+      th:nth-child(2), td:nth-child(2) {
+        width: 180px !important;
+        min-width: 180px !important;
+        max-width: 180px !important;
+        font-size: 14px !important;
+      }
+      
+      /* Make subject columns with MUCH larger fonts for print */
+      th.vertical {
+        width: 32px !important;
+        max-width: 32px !important;
+        padding: 3px !important;
+        font-size: 14px !important;
+        font-weight: 700 !important;
+      }
+      
+      td.subject-cell {
+        width: 32px !important;
+        max-width: 32px !important;
+        padding: 2px !important;
+        font-size: 15px !important;
+        font-weight: 600 !important;
+      }
+      
+      /* TOTAL, GRADE, PERCENTAGE, POSITION columns with larger fonts */
+      th.vertical:nth-last-child(-n+4), 
+      td:nth-last-child(-n+4) {
+        width: 35px !important;
+        max-width: 35px !important;
+        font-size: 14px !important;
+      }
+
+      /* Larger font for all table headers */
+      th {
+        font-size: 14px !important;
+        font-weight: 700 !important;
+      }
+      
+      /* 🔽 SMALLER WATERMARK FOR PRINT */
+      .table-watermark {
+        display: block !important;
+        position: fixed !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) rotate(-45deg) !important;
+        font-size: 65px !important;
+        font-weight: 800 !important;
+        color: rgba(0, 0, 0, 0.08) !important;
+        z-index: 1000 !important;
+        pointer-events: none !important;
+        white-space: nowrap !important;
+        opacity: 0.85 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        text-align: center !important;
+        width: 100% !important;
+        line-height: 1 !important;
+      }
+    }
+
+    /* 🔽 SMALLER WATERMARK FOR SCREEN */
+    .table-watermark {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-45deg);
+      font-size: 65px;
+      font-weight: 800;
+      color: rgba(0, 0, 0, 0.06);
+      z-index: 999;
+      pointer-events: none;
+      white-space: nowrap;
+      opacity: 0.85;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+      width: 100%;
+      line-height: 1;
+    }
+
+    /* 🔽 NOTIFICATION STYLES */
+    .student-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #10B981;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      z-index: 1004;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      animation: slideIn 0.3s ease;
+      font-weight: 500;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+    }
+
+    /* 🔽 Optimized subject columns for screen with larger fonts */
+    th.vertical {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      text-align: center;
+      padding: 4px;
+      font-weight: 700;
+      width: 35px;
+      max-width: 35px;
+      font-size: 14px;
+    }
+
+    /* 🔽 Match subject cell width to header */
+    td.subject-cell {
+      width: 35px;
+      max-width: 35px;
+      padding: 3px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      table-layout: fixed;
+      position: relative;
+      z-index: 1;
+    }
+
+    th, td {
+      border: 1px solid #000;
+      text-align: center;
+      padding: 4px;
+      font-size: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* S/N column styling with larger font */
+    th:first-child, td:first-child {
+      width: 50px;
+      min-width: 50px;
+      max-width: 50px;
+      font-size: 14px;
+    }
+
+    /* Student name column styling for screen with larger font */
+    th:nth-child(2), td:nth-child(2) {
+      width: 160px;
+      min-width: 160px;
+      max-width: 160px;
+      text-align: left;
+      padding-left: 8px;
+      font-size: 14px;
+    }
+
+    /* TOTAL, GRADE, PERCENTAGE, POSITION columns with larger fonts */
+    th.vertical:nth-last-child(-n+4), 
+      td:nth-last-child(-n+4) {
+      width: 40px;
+      max-width: 40px;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      text-align: center;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 14px;
+    }
+
+    input:focus, select:focus {
+      background: #eef;
+    }
+
+    .delete-btn {
+      color: red;
+      cursor: pointer;
+      margin-left: 4px;
+      font-size: 14px;
+    }
+    
+    /* Subject controls styling */
+    #subject-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+      padding: 6px;
+      background: #f5f5f5;
+      border-radius: 4px;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .subject-control {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 6px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      font-size: 14px;
+    }
+    
+    .subject-control select {
+      width: auto;
+      min-width: 120px;
+      font-size: 13px;
+    }
+    
+    .subject-control button {
+      color: red;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 16px;
+    }
+
+    /* Header optimizations with larger fonts */
+    header {
+      margin-bottom: 4px;
+      margin-top: 30px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* MUCH Larger logo size */
+    .school-logo {
+      width: 100px !important;
+      height: 100px !important;
+    }
+
+    /* MUCH Larger school name */
+    header h1 {
+      font-size: 38px !important;
+      margin-bottom: 20px !important;
+    }
+
+    header h2 {
+      font-size: 28px !important;
+      margin-top: 20px !important;
+    }
+
+    .info-input {
+      font-size: 14px;
+    }
+
+    /* Ensure delete buttons are visible on screen */
+    .delete-btn {
+      display: inline-block;
+    }
+
+    /* Hide print-only elements on screen */
+    .print-only {
+      display: none;
+    }
+
+    /* Single underscore styling for both web and print */
+    .underscore-input {
+      border: none;
+      border-bottom: 1px solid #000;
+      background: transparent;
+      outline: none;
+      text-align: center;
+      min-width: 80px;
+      font-size: 14px;
+      margin: 0 4px;
+      text-transform: uppercase;
+    }
+
+    .underscore-input:focus {
+      background: #eef;
+    }
+
+    /* Broad sheet level display */
+    .broad-sheet-level {
+      font-weight: bold;
+      margin-left: 4px;
+    }
+
+    /* Moved CLASS, TERM, YEAR, SESSION fields down */
+    .info-fields {
+      margin-top: 45px;
+    }
+
+    /* 🔽 FLOATING ADD STUDENT BUTTON */
+    .floating-add-student-btn {
+      position: fixed;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+      cursor: pointer;
+      z-index: 1003;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: none;
+      outline: none;
+      animation: floatAddStudent 3s ease-in-out infinite;
+      user-select: none;
+      bottom: 150px;
+      right: 30px;
+    }
+
+    .floating-add-student-btn:hover {
+      transform: scale(1.15) translateY(-5px);
+      box-shadow: 0 12px 35px rgba(16, 185, 129, 0.6);
+      background: linear-gradient(135deg, #059669, #047857);
+    }
+
+    .floating-add-student-btn:active {
+      transform: scale(0.95) translateY(2px);
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .floating-add-student-btn .tooltip {
+      position: absolute;
+      bottom: 80px;
+      right: 0;
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .floating-add-student-btn:hover .tooltip {
+      opacity: 1;
+    }
+
+    /* Counter badge */
+    .student-counter {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ef4444;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+      animation: pulseCounter 2s infinite;
+    }
+
+    @keyframes floatAddStudent {
+      0%, 100% {
+        transform: translateY(0px);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @keyframes pulseCounter {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    /* 🔽 FLOATING HOME BUTTON STYLES */
+    .floating-home-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+      cursor: pointer;
+      z-index: 1002;
+      transition: all 0.3s ease;
+      border: none;
+      outline: none;
+      animation: pulse 2s infinite;
+    }
+
+    .floating-home-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+      background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    }
+
+    .floating-home-btn:active {
+      transform: scale(0.95);
+    }
+
+    .floating-home-btn .tooltip {
+      position: absolute;
+      bottom: 70px;
+      right: 0;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .floating-home-btn:hover .tooltip {
+      opacity: 1;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+      }
+      50% {
+        box-shadow: 0 6px 25px rgba(59, 130, 246, 0.8);
+      }
+      100% {
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+      }
+    }
+
+    /* Add some space for the floating buttons */
+    body {
+      padding-bottom: 120px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Make sure all interactive elements are above watermark */
+    #controls, .overflow-x-auto, header, #subject-controls {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Responsive adjustments - EVEN SMALLER */
+    @media (max-width: 768px) {
+      .floating-add-student-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+        right: 20px;
+        bottom: 130px;
+      }
+      
+      .floating-home-btn {
+        width: 50px;
+        height: 50px;
+        bottom: 20px;
+        right: 20px;
+        font-size: 20px;
+      }
+      
+      .student-counter {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+      }
+      
+      /* Much smaller watermark for mobile */
+      .table-watermark {
+        font-size: 45px !important;
+        letter-spacing: 0.8px !important;
+      }
+      
+      @media print {
+        .table-watermark {
+          font-size: 50px !important;
+        }
+      }
+    }
+    
+    /* Very small screens - EVEN SMALLER */
+    @media (max-width: 480px) {
+      .floating-add-student-btn {
+        width: 55px;
+        height: 55px;
+        font-size: 22px;
+        right: 15px;
+        bottom: 120px;
+      }
+      
+      body {
+        padding-bottom: 100px;
+      }
+      
+      .table-watermark {
+        font-size: 35px !important;
+        letter-spacing: 0.5px !important;
+      }
+      
+      @media print {
+        .table-watermark {
+          font-size: 40px !important;
+        }
+      }
+    }
+    
+    /* Desktop - MODERATE SIZE */
+    @media (min-width: 1024px) {
+      .table-watermark {
+        font-size: 70px !important;
+        letter-spacing: 1.2px !important;
+      }
+      
+      @media print {
+        .table-watermark {
+          font-size: 75px !important;
+        }
+      }
+    }
+    
+    /* Large desktop - STILL REASONABLE */
+    @media (min-width: 1440px) {
+      .table-watermark {
+        font-size: 75px !important;
+      }
+      
+      @media print {
+        .table-watermark {
+          font-size: 80px !important;
+        }
+      }
+    }
+    
+    /* 🔽 ENSURE WATERMARK STAYS BEHIND CONTENT */
+    .table-watermark {
+      mix-blend-mode: multiply;
+    }
+  </style>
+</head>
+<body class="bg-white text-gray-900 p-2 font-sans">
+  <!-- 🔽 WATERMARK ELEMENT -->
+  <div id="tableWatermark" class="table-watermark"></div>
+
+  <!-- Header -->
+  <header class="text-center mb-4">
+    <div class="flex items-center justify-center gap-3">
+     <img 
+    src="{% static 'img/emilia_logo.png' %}"
+    alt="Emilia Logo"
+    class="school-logo object-contain"
+/>
+
+      <div>
+        <h1 class="text-2xl font-extrabold uppercase">Emilia - Foremost High School</h1>
+        <h2 class="text-lg font-semibold uppercase">
+          Broad Sheet (
+          <select class="no-underline w-14 text-center no-print broad-sheet-select">
+            <option value="JSS">JSS</option>
+            <option value="SSS" selected>SSS</option>
+          </select>
+          <span class="print-only broad-sheet-level">SSS</span>
+          )
+        </h2>
+      </div>
+    </div>
+
+    <!-- Moved CLASS, TERM, YEAR, SESSION fields down -->
+    <div class="info-fields flex justify-center gap-6 text-base">
+      <label class="flex items-center gap-1 uppercase font-semibold">
+        Class: 
+        <input type="text" class="underscore-input w-20 class-input" placeholder="" id="classInput" />
+      </label>
+      <label class="flex items-center gap-1 uppercase font-semibold">
+        Term: 
+        <input type="text" class="underscore-input w-20 term-input" placeholder="" id="termInput" />
+      </label>
+      <label class="flex items-center gap-1 uppercase font-semibold">
+        Year: 
+        <input type="text" class="underscore-input w-20 year-input" placeholder="" id="yearInput" />
+      </label>
+      <label class="flex items-center gap-1 uppercase font-semibold">
+        Session: 
+        <input type="text" class="underscore-input w-20 session-input" placeholder="" id="sessionInput" />
+      </label>
+    </div>
+  </header>
+
+  <!-- Controls -->
+  <div id="controls" class="flex gap-3 mb-3">
+    <button onclick="addSubject()" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">➕ Add Subject</button>
+    <button onclick="window.print()" class="bg-gray-800 text-white px-3 py-1 rounded text-sm hover:bg-black">🖨️ Print</button>
+  </div>
+
+  <!-- Subject Controls -->
+  <div id="subject-controls">
+    <!-- Subject controls will be inserted here -->
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto">
+    <table id="broadSheetTable">
+      <thead class="bg-gray-200">
+        <tr id="headerRow">
+          <th>S/N</th>
+          <th>NAME OF STUDENTS</th>
+          <!-- Subject headers will be inserted here -->
+          <th class="vertical">TOTAL</th>
+          <th class="vertical">GRADE</th>
+          <th class="vertical">PERCENTAGE</th>   <!-- NEW PERCENTAGE COLUMN -->
+          <th class="vertical">POSITION</th>
+         </tr>
+      </thead>
+      <tbody id="tableBody">
+         <tr>
+           <td>1 <span class="delete-btn" onclick="deleteStudent(this)">🗑️</span></td>
+          <td contenteditable="true"></td>
+          <!-- Subject cells will be inserted here -->
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>   <!-- PERCENTAGE CELL -->
+          <td contenteditable="true"></td>
+         </tr>
+      </tbody>
+     </table>
+  </div>
+
+  <!-- 🔽 FLOATING ADD STUDENT BUTTON -->
+  <button class="floating-add-student-btn no-print" onclick="addStudent()">
+    👩‍🎓
+    <div class="student-counter" id="studentCounter">1</div>
+    <span class="tooltip">Add New Student</span>
+  </button>
+
+  <!-- 🔽 FLOATING HOME BUTTON -->
+  <button class="floating-home-btn no-print" onclick="goHome()">
+    🏠
+    <span class="tooltip">Go to Home Page</span>
+  </button>
+
+  <script>
+    const subjects = [
+      "MATHS", "ENGLISH", "PHYSICS", "CHEMISTRY", "ECONOMICS",
+      "F/MATHS", "LIT-IN-ENGLISH", "CITIZENSHIP & Heri", "GOVERNMENT",
+      "GEOGRAPHY", "ACCOUNTING", "MARKETING", "COMMERCES", "DIGITAL TECH",
+      "BIOLOGY", "C.R.S", "LIVESTOCK", "AGRIC", "SOCIAL", "PHE",
+      "CCA", "HISTORY", "INTER/SCIENCE", "BUSINESS", "CROP PRODUCTION"
+    ];
+
+    // Track subject controls and their corresponding table columns
+    let subjectControlMap = new Map();
+    let subjectControlCounter = 0;
+    let studentCount = 1;
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      const broadSheetSelect = document.querySelector('.broad-sheet-select');
+      broadSheetSelect.addEventListener('change', function() {
+        document.querySelector('.broad-sheet-level').textContent = this.value;
+      });
+      document.querySelector('.broad-sheet-level').textContent = broadSheetSelect.value;
+      
+      setupInputListeners();
+      updateFloatingButtonPosition();
+      
+      const addStudentBtn = document.querySelector('.floating-add-student-btn');
+      if (addStudentBtn) {
+        addStudentBtn.style.display = 'flex';
+      }
+      
+      updateWatermarkFromAllFields();
+      window.addEventListener('resize', function() {
+        updateWatermarkFromAllFields();
+      });
+    });
+
+    function setupInputListeners() {
+      const classInput = document.getElementById('classInput');
+      const termInput = document.getElementById('termInput');
+      const yearInput = document.getElementById('yearInput');
+      const sessionInput = document.getElementById('sessionInput');
+      const allInputs = [classInput, termInput, yearInput, sessionInput];
+      allInputs.forEach(input => {
+        if (input) {
+          input.addEventListener('input', updateWatermarkFromAllFields);
+          input.addEventListener('blur', updateWatermarkFromAllFields);
+          input.addEventListener('keyup', updateWatermarkFromAllFields);
+        }
+      });
+    }
+
+    function formatClass(input) {
+      if (!input || input.trim() === '') return '';
+      return input.toString().trim().toUpperCase().replace(/\s+/g, ' ');
+    }
+
+    function formatTerm(input) {
+      if (!input || input.trim() === '') return '';
+      let cleaned = input.toString().trim().toUpperCase();
+      if (cleaned.match(/^1(st)?$/i) || cleaned.includes('FIRST')) return 'TERM 1';
+      if (cleaned.match(/^2(nd)?$/i) || cleaned.includes('SECOND')) return 'TERM 2';
+      if (cleaned.match(/^3(rd)?$/i) || cleaned.includes('THIRD')) return 'TERM 3';
+      if (cleaned.match(/^\d+$/)) return 'TERM ' + cleaned;
+      return cleaned;
+    }
+
+    function formatYear(input) {
+      if (!input || input.trim() === '') return '';
+      let cleaned = input.toString().trim();
+      if (cleaned.match(/^\d{4}$/)) return cleaned;
+      if (cleaned.match(/^\d{2}$/)) return '20' + cleaned;
+      return cleaned;
+    }
+
+    function updateWatermarkFromAllFields() {
+      const classValue = document.getElementById('classInput').value;
+      const termValue = document.getElementById('termInput').value;
+      const yearValue = document.getElementById('yearInput').value;
+      const formattedClass = formatClass(classValue);
+      const formattedTerm = formatTerm(termValue);
+      const formattedYear = formatYear(yearValue);
+      const parts = [];
+      if (formattedClass) parts.push(formattedClass);
+      if (formattedTerm) parts.push(formattedTerm);
+      if (formattedYear) parts.push(formattedYear);
+      let watermarkText = parts.join(' - ');
+      updateWatermarkDisplay(watermarkText);
+    }
+
+    function updateWatermarkDisplay(watermarkText) {
+      const watermark = document.getElementById('tableWatermark');
+      if (!watermark) return;
+      if (watermarkText && watermarkText.trim() !== '') {
+        watermark.textContent = watermarkText;
+        watermark.style.display = 'block';
+        let baseSize = 65;
+        if (window.innerWidth >= 1440) baseSize = 75;
+        else if (window.innerWidth >= 1024) baseSize = 70;
+        else if (window.innerWidth >= 768) baseSize = 45;
+        else baseSize = 35;
+        const textLength = watermarkText.length;
+        let adjustedSize = baseSize;
+        if (textLength > 25) adjustedSize = baseSize * 0.60;
+        else if (textLength > 20) adjustedSize = baseSize * 0.70;
+        else if (textLength > 15) adjustedSize = baseSize * 0.80;
+        else if (textLength > 10) adjustedSize = baseSize * 0.90;
+        adjustedSize = Math.max(30, adjustedSize);
+        watermark.style.fontSize = adjustedSize + 'px';
+        watermark.style.position = 'fixed';
+        watermark.style.top = '50%';
+        watermark.style.left = '50%';
+        watermark.style.transform = 'translate(-50%, -50%) rotate(-45deg)';
+        watermark.style.opacity = '0.85';
+        watermark.style.zIndex = '998';
+        watermark.style.textAlign = 'center';
+        watermark.style.width = '100%';
+        watermark.style.lineHeight = '1';
+        watermark.style.letterSpacing = '1px';
+        watermark.style.fontWeight = '800';
+        watermark.offsetHeight;
+      } else {
+        watermark.style.opacity = '0';
+        setTimeout(() => { watermark.style.display = 'none'; }, 300);
+      }
+    }
+
+    function updateFloatingButtonPosition() {
+      const addStudentBtn = document.querySelector('.floating-add-student-btn');
+      const homeBtn = document.querySelector('.floating-home-btn');
+      if (!addStudentBtn || !homeBtn) return;
+      const homeBtnBottom = parseInt(getComputedStyle(homeBtn).bottom) || 25;
+      let addStudentBtnBottom = homeBtnBottom + 125;
+      addStudentBtn.style.bottom = addStudentBtnBottom + 'px';
+    }
+
+    window.addEventListener('scroll', updateFloatingButtonPosition);
+    window.addEventListener('resize', updateFloatingButtonPosition);
+
+    const originalPrint = window.print;
+    window.print = function() {
+      const notifications = document.querySelectorAll('.student-notification');
+      notifications.forEach(notification => notification.remove());
+      updateWatermarkFromAllFields();
+      const watermark = document.getElementById('tableWatermark');
+      if (watermark && watermark.style.display === 'block') {
+        const textLength = watermark.textContent.length;
+        let printSize = 65;
+        if (textLength > 25) printSize = 50;
+        else if (textLength > 20) printSize = 55;
+        else if (textLength > 15) printSize = 60;
+        watermark.style.fontSize = printSize + 'px';
+        watermark.style.color = 'rgba(0, 0, 0, 0.08)';
+        watermark.style.fontWeight = '800';
+      }
+      setTimeout(() => { originalPrint.call(window); }, 150);
+    };
+
+    function goHome() {
+      const homeUrl = '/';
+      const userConfirmed = confirm('Are you sure you want to go to the home page? Any unsaved changes will be lost.');
+      if (userConfirmed) window.location.href = homeUrl;
+    }
+
+    function addStudent() {
+      const tableBody = document.getElementById('tableBody');
+      const rows = tableBody.querySelectorAll('tr');
+      let maxSN = 0;
+      rows.forEach(row => {
+        const snText = row.children[0].textContent.trim();
+        const snNumber = parseInt(snText);
+        if (!isNaN(snNumber) && snNumber > maxSN) maxSN = snNumber;
+      });
+      const newSN = maxSN + 1;
+      const row = document.createElement('tr');
+      row.style.opacity = '0';
+      row.style.transform = 'translateY(-20px)';
+      let cells = `<td>${newSN} <span class="delete-btn" onclick="deleteStudent(this)">🗑️</span></td>
+                   <td contenteditable="true" class="new-student-name"></td>`;
+      for (let controlId of subjectControlMap.keys()) {
+        cells += `<td contenteditable="true" class="subject-cell" data-control-id="${controlId}"></td>`;
+      }
+      cells += `<td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>
+                <td contenteditable="true"></td>`;
+      row.innerHTML = cells;
+      tableBody.appendChild(row);
+      setTimeout(() => {
+        row.style.transition = 'all 0.4s ease';
+        row.style.opacity = '1';
+        row.style.transform = 'translateY(0)';
+      }, 10);
+      studentCount = tableBody.querySelectorAll('tr').length;
+      document.getElementById('studentCounter').textContent = studentCount;
+      setTimeout(updateFloatingButtonPosition, 200);
+      setTimeout(() => {
+        const nameField = row.querySelector('.new-student-name');
+        if (nameField) nameField.focus();
+      }, 300);
+      showNotification(`Student #${newSN} added successfully!`);
+    }
+
+    function showNotification(message) {
+      const existingNotification = document.querySelector('.student-notification');
+      if (existingNotification) existingNotification.remove();
+      const notification = document.createElement('div');
+      notification.className = 'student-notification no-print';
+      notification.textContent = message;
+      notification.style.cssText = `position: fixed; top: 20px; right: 20px; background: #10B981; color: white; padding: 12px 20px; border-radius: 8px; z-index: 1004; box-shadow: 0 4px 12px rgba(0,0,0,0.2); animation: slideIn 0.3s ease; font-weight: 500;`;
+      document.body.appendChild(notification);
+      setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+      }, 2000);
+    }
+
+    function deleteStudent(el) {
+      const row = el.closest('tr');
+      const rows = document.querySelectorAll('#tableBody tr');
+      const snText = row.children[0].textContent.trim();
+      const deletedSN = parseInt(snText) || 'unknown';
+      row.style.transition = 'all 0.3s ease';
+      row.style.opacity = '0';
+      row.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        row.remove();
+        updateSerialNumbers();
+        updateFloatingButtonPosition();
+        showNotification(`Student #${deletedSN} removed successfully!`);
+      }, 300);
+    }
+
+    function updateSerialNumbers() {
+      const rows = document.querySelectorAll('#tableBody tr');
+      studentCount = rows.length;
+      rows.forEach((row, index) => {
+        const snCell = row.children[0];
+        const newSN = index + 1;
+        snCell.innerHTML = `${newSN} <span class="delete-btn" onclick="deleteStudent(this)">🗑️</span>`;
+      });
+      document.getElementById('studentCounter').textContent = studentCount;
+    }
+
+    function createSubjectHeader(subjectName, controlId) {
+      const th = document.createElement('th');
+      th.className = 'vertical';
+      th.textContent = subjectName;
+      th.dataset.controlId = controlId;
+      return th;
+    }
+
+    function createSubjectControl(subjectName, controlId) {
+      const control = document.createElement('div');
+      control.className = 'subject-control';
+      control.dataset.controlId = controlId;
+      const select = document.createElement('select');
+      select.innerHTML = subjects.map(sub => `<option value="${sub}" ${sub === subjectName ? 'selected' : ''}>${sub}</option>`).join('');
+      select.onchange = () => updateSubjectHeader(controlId, select.value);
+      const del = document.createElement('button');
+      del.innerHTML = '🗑️';
+      del.onclick = () => deleteSubject(controlId);
+      control.appendChild(select);
+      control.appendChild(del);
+      return control;
+    }
+
+    function updateSubjectHeader(controlId, subjectName) {
+      const headerRow = document.getElementById('headerRow');
+      const headers = headerRow.querySelectorAll('th.vertical');
+      for (let header of headers) {
+        if (header.dataset.controlId === controlId) {
+          header.textContent = subjectName;
+          break;
+        }
+      }
+    }
+
+    function addSubject() {
+      const headerRow = document.getElementById('headerRow');
+      const totalIndex = headerRow.children.length - 4; // Adjusted for PERCENTAGE column (now 4 static cols)
+      const subjectName = subjects[0];
+      const controlId = `subject-${subjectControlCounter++}`;
+      headerRow.insertBefore(createSubjectHeader(subjectName, controlId), headerRow.children[totalIndex]);
+      const subjectControls = document.getElementById('subject-controls');
+      subjectControls.appendChild(createSubjectControl(subjectName, controlId));
+      const rows = document.querySelectorAll('#tableBody tr');
+      rows.forEach(row => {
+        const td = document.createElement('td');
+        td.contentEditable = true;
+        td.classList.add('subject-cell');
+        td.dataset.controlId = controlId;
+        row.insertBefore(td, row.children[totalIndex]);
+      });
+      subjectControlMap.set(controlId, { headerIndex: totalIndex, subjectName: subjectName });
+      updateFloatingButtonPosition();
+    }
+
+    function deleteSubject(controlId) {
+      const subjectControls = document.getElementById('subject-controls');
+      const control = subjectControls.querySelector(`.subject-control[data-control-id="${controlId}"]`);
+      if (control) control.remove();
+      const headerRow = document.getElementById('headerRow');
+      const header = headerRow.querySelector(`th.vertical[data-control-id="${controlId}"]`);
+      if (header) header.remove();
+      const rows = document.querySelectorAll('#tableBody tr');
+      rows.forEach(row => {
+        const cell = row.querySelector(`td[data-control-id="${controlId}"]`);
+        if (cell) cell.remove();
+      });
+      subjectControlMap.delete(controlId);
+      updateFloatingButtonPosition();
+    }
+  </script>
+</body>
+</html>

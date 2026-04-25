@@ -1,0 +1,348 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Portal | Emilia Foremost</title>
+    <!-- Favicon - Emilia Logo -->
+<link rel="icon" type="image/x-icon" href="{% static 'img/emilia_logo_circle.png' %}">
+
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'portal-blue': '#0f172a',
+            'portal-indigo': '#1e1b4b',
+            'portal-accent': '#3b82f6',
+            'portal-accent-dark': '#1d4ed8',
+            'emilia-primary': '#1e40af',
+            'emilia-secondary': '#3730a3',
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'glow': 'glow 2s ease-in-out infinite alternate',
+            'shake': 'shake 0.5s ease-in-out',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'fade-in': 'fadeIn 0.5s ease-in-out',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            glow: {
+              'from': { boxShadow: '0 0 20px #3b82f6' },
+              'to': { boxShadow: '0 0 30px #1d4ed8, 0 0 40px #60a5fa' }
+            },
+            shake: {
+              '0%, 100%': { transform: 'translateX(0)' },
+              '25%': { transform: 'translateX(-5px)' },
+              '75%': { transform: 'translateX(5px)' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-gradient-to-br from-portal-blue to-portal-indigo min-h-screen flex items-center justify-center p-3 overflow-hidden">
+  <!-- STRICT PC-ONLY MODAL -->
+  <div id="deviceModal" class="fixed inset-0 bg-red-900 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center animate-fade-in">
+      <div class="text-red-500 text-5xl mb-3 animate-pulse">
+        <i class="fas fa-ban"></i>
+      </div>
+      <h2 class="text-xl font-bold text-gray-800 mb-3">🚫 PC Access Only</h2>
+      <p class="text-gray-600 text-sm mb-4">
+        <strong>This portal requires a desktop or laptop computer.</strong> 
+        Tablets, iPads, and smartphones are strictly blocked.
+      </p>
+
+      <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+        <p class="text-red-700 text-xs font-medium">
+          Detected Device: <span id="detectedDevice" class="font-bold">Unknown Device</span>
+        </p>
+      </div>
+      
+      <div class="mt-4 p-3 bg-gray-100 rounded-lg">
+        <p class="text-xs text-gray-700">
+          <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+          Please access this portal from a desktop or laptop computer with a minimum screen width of 1024px.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN LOGIN -->
+  <div id="mainContent" class="w-full max-w-3xl animate-fade-in">
+    <!-- Security Status Bar -->
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-3 text-white gap-2 text-xs">
+      <div class="flex items-center space-x-2">
+        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        <span class="font-medium">Secure Connection</span>
+      </div>
+      <div class="flex items-center space-x-3 text-xs">
+        <div class="flex items-center space-x-1">
+          <i class="fas fa-desktop text-blue-400"></i>
+          <span>PC Mode Active</span>
+        </div>
+        <div class="flex items-center space-x-1">
+          <i class="fas fa-shield-alt text-green-400"></i>
+          <span>Portal Secured</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="bg-white/10 backdrop-blur-lg rounded-xl shadow-xl overflow-hidden border border-white/20 relative">
+      <!-- Background Elements -->
+      <div class="absolute -top-12 -right-12 w-24 h-24 bg-blue-500/10 rounded-full blur-xl"></div>
+      <div class="absolute -bottom-12 -left-12 w-24 h-24 bg-purple-500/10 rounded-full blur-xl"></div>
+      
+      <div class="flex flex-col lg:flex-row">
+        
+        <!-- Left Section - Smaller -->
+        <div class="lg:w-2/5 bg-gradient-to-br from-emilia-primary to-emilia-secondary p-6 text-white flex flex-col justify-between relative overflow-hidden">
+          <!-- Background Pattern -->
+          <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-4 left-4 w-12 h-12 border-2 border-white rounded-lg animate-float"></div>
+            <div class="absolute bottom-4 right-4 w-10 h-10 border-2 border-white rounded-full animate-float" style="animation-delay: 2s;"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 border-2 border-white rotate-45 animate-pulse-slow"></div>
+          </div>
+          
+          <div class="relative z-10">
+            <div class="flex items-center mb-4">
+              <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mr-3 backdrop-blur-sm border border-white/30">
+                <i class="fas fa-school text-lg"></i>
+              </div>
+              <div>
+                <h1 class="text-xl font-bold tracking-tight">Emilia Foremost</h1>
+                <p class="text-blue-200 text-xs mt-1">Excellence in Education</p>
+              </div>
+            </div>
+
+            <h2 class="text-xl font-bold mb-3 leading-tight">Staff Portal<br><span class="text-blue-300 text-lg">Secure Access</span></h2>
+            <p class="text-blue-200 text-xs mb-4 leading-relaxed">
+              Authorized access to examination reports, student records, and institutional analytics.
+            </p>
+            
+            <div class="space-y-2">
+              <div class="flex items-center">
+                <div class="w-5 h-5 rounded-full bg-blue-500/30 flex items-center justify-center mr-2">
+                  <i class="fas fa-shield-check text-blue-300 text-xs"></i>
+                </div>
+                <span class="text-blue-100 text-xs">End-to-end encrypted connection</span>
+              </div>
+              <div class="flex items-center">
+                <div class="w-5 h-5 rounded-full bg-blue-500/30 flex items-center justify-center mr-2">
+                  <i class="fas fa-chart-bar text-blue-300 text-xs"></i>
+                </div>
+                <span class="text-blue-100 text-xs">Advanced analytics dashboard</span>
+              </div>
+              <div class="flex items-center">
+                <div class="w-5 h-5 rounded-full bg-blue-500/30 flex items-center justify-center mr-2">
+                  <i class="fas fa-file-export text-blue-300 text-xs"></i>
+                </div>
+                <span class="text-blue-100 text-xs">Comprehensive reporting tools</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative z-10 mt-4 bg-black/20 rounded-lg p-3 border border-white/10 backdrop-blur-sm">
+            <div class="flex">
+              <div class="flex-shrink-0 mr-2 text-yellow-400 text-sm">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+              <p class="text-xs text-blue-200">
+                <span class="font-semibold">Security Notice:</span> This system contains sensitive information. Access is monitored and logged.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Section - Login Form (Smaller) -->
+        <div class="lg:w-3/5 p-6 bg-white/95 backdrop-blur-sm">
+          <div class="text-center mb-4">
+            <h2 class="text-xl font-bold text-gray-800 mb-1">Staff Authentication</h2>
+            <p class="text-gray-600 text-xs">Enter your secure credentials to continue</p>
+          </div>
+
+          <form method="POST" action="{% url 'staff_login' %}" class="space-y-4">
+            {% csrf_token %}
+            <div>
+              <label for="username" class="block text-xs font-semibold text-gray-700 mb-1">Staff ID / Username</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-user text-gray-400 text-sm"></i>
+                </div>
+                <input type="text" id="username" name="username" required
+                  class="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-portal-accent focus:border-portal-accent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                  placeholder="Enter your staff ID or username">
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label for="password" class="block text-xs font-semibold text-gray-700">Password</label>
+                <a href="#" class="text-xs text-portal-accent hover:text-portal-accent-dark font-medium">Forgot Password?</a>
+              </div>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="fas fa-lock text-gray-400 text-sm"></i>
+                </div>
+                <input type="password" id="password" name="password" required
+                  class="w-full pl-9 pr-9 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-portal-accent focus:border-portal-accent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                  placeholder="Enter your secure password">
+                <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 transition-colors">
+                  <i class="fas fa-eye text-xs"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <input type="checkbox" id="remember" class="h-3 w-3 text-portal-accent focus:ring-portal-accent border-gray-300 rounded">
+              <label for="remember" class="ml-2 block text-xs text-gray-700">Remember this device</label>
+            </div>
+
+            {% if messages %}
+            <div class="text-center p-2 bg-red-50 border border-red-200 rounded-lg animate-shake">
+              {% for message in messages %}
+                <p class="text-red-600 font-semibold text-xs"><i class="fas fa-exclamation-circle mr-1"></i>{{ message }}</p>
+              {% endfor %}
+            </div>
+            {% endif %}
+
+            <button type="submit"
+              class="w-full bg-gradient-to-r from-portal-accent to-portal-accent-dark text-white py-2.5 px-4 rounded-lg font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center group text-xs">
+              <span>Sign In to Portal</span>
+              <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform text-xs"></i>
+            </button>
+          </form>
+
+          <div class="mt-4 pt-4 border-t border-gray-200">
+            <p class="text-gray-600 text-center mb-3 text-xs">Need access to the staff portal?</p>
+            <button id="requestAccessBtn"
+              class="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-2.5 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center group text-xs">
+              <i class="fab fa-whatsapp mr-2 text-sm"></i>
+              <span>Request Access via WhatsApp</span>
+              <i class="fas fa-external-link-alt ml-2 text-xs opacity-70 group-hover:translate-x-0.5 transition-transform"></i>
+            </button>
+            <p class="text-xs text-gray-500 text-center mt-2">Contact system administrator to obtain your Staff ID and Password</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="mt-3 text-center text-white/60 text-xs">
+      <p>Emilia Foremost &copy; 2023 | Secure Staff Access System v2.1</p>
+    </div>
+  </div>
+
+  <script>
+    // Password toggle functionality
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordField = document.getElementById("password");
+    
+    if (togglePassword && passwordField) {
+      togglePassword.addEventListener("click", () => {
+        const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+        passwordField.setAttribute("type", type);
+        const icon = togglePassword.querySelector("i");
+        icon.classList.toggle("fa-eye");
+        icon.classList.toggle("fa-eye-slash");
+      });
+    }
+
+    // WhatsApp request functionality
+    document.getElementById("requestAccessBtn")?.addEventListener("click", function() {
+      const msg = encodeURIComponent("Hello, I am a staff member at Emilia Foremost and I need access to the staff portal. Please provide me with my Staff ID and password.");
+      window.open(`https://wa.me/2349057147497?text=${msg}`, "_blank");
+    });
+
+    // Enhanced device detection and enforcement
+    function isPC() {
+      const ua = navigator.userAgent.toLowerCase();
+      const isMobile = /android|iphone|ipad|ipod|mobile|tablet/.test(ua);
+      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const screenWidth = window.screen.width;
+      const viewportWidth = window.innerWidth;
+      
+      // More strict PC detection
+      return !isMobile && 
+             !hasTouch && 
+             screenWidth >= 1024 && 
+             viewportWidth >= 1024 &&
+             window.orientation === undefined;
+    }
+
+    function enforcePCOnly() {
+      const modal = document.getElementById("deviceModal");
+      const mainContent = document.getElementById("mainContent");
+      const detectedDevice = document.getElementById("detectedDevice");
+      
+      if (isPC()) {
+        modal.classList.add("hidden");
+        mainContent.classList.remove("hidden");
+      } else {
+        modal.classList.remove("hidden");
+        mainContent.classList.add("hidden");
+        
+        // More detailed device detection
+        const ua = navigator.userAgent;
+        let deviceType = "Unknown Device";
+        
+        if (/iPad/.test(ua)) {
+          deviceType = "iPad";
+        } else if (/iPhone/.test(ua)) {
+          deviceType = "iPhone";
+        } else if (/Android/.test(ua)) {
+          deviceType = "Android Device";
+        } else if (/Tablet/.test(ua)) {
+          deviceType = "Tablet";
+        } else if (/Mobile/.test(ua)) {
+          deviceType = "Mobile Phone";
+        } else {
+          deviceType = "Incompatible Device";
+        }
+        
+        detectedDevice.textContent = deviceType;
+      }
+    }
+
+    // Initial check and continuous monitoring
+    window.addEventListener("load", enforcePCOnly);
+    window.addEventListener("resize", enforcePCOnly);
+    window.addEventListener("orientationchange", enforcePCOnly);
+    
+    // Additional security: prevent zoom on PC
+    function preventZoom() {
+      document.addEventListener('wheel', function(e) {
+        if (e.ctrlKey) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+      
+      document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '0')) {
+          e.preventDefault();
+        }
+      });
+    }
+    
+    if (isPC()) {
+      preventZoom();
+    }
+  </script>
+</body>
+</html>
