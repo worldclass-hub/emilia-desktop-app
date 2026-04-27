@@ -1,5 +1,5 @@
 const { app, BrowserWindow } = require('electron');
-const { exec, spawn } = require('child_process');
+const { spawn } = require('child_process');
 const path = require('path');
 
 let djangoProcess = null;
@@ -13,17 +13,23 @@ function startDjango() {
     const djangoPath = path.join(__dirname, 'django_app', 'manage.py');
     
     if (isWindows) {
-        // Windows: Use python directly
-        console.log('Windows mode - using python');
-        djangoProcess = spawn('python', [djangoPath, 'runserver', '--noreload', '127.0.0.1:8000'], {
-            cwd: path.join(__dirname, 'django_app'),
+        // Windows: Use python directly with proper shell
+        const pythonCmd = 'python';
+        const djangoDir = path.join(__dirname, 'django_app');
+        
+        djangoProcess = spawn(pythonCmd, [djangoPath, 'runserver', '--noreload', '127.0.0.1:8000'], {
+            cwd: djangoDir,
             env: { ...process.env, DJANGO_SETTINGS_MODULE: 'emilia_report.settings' },
-            shell: true
+            shell: true,
+            detached: false
         });
     } else {
-        // Mac: Use shell script
-        console.log('Mac mode - using shell script');
-        djangoProcess = exec(path.join(__dirname, 'start_django.sh'));
+        // Mac: Use the virtual environment python
+        const pythonPath = '/Users/mac/Desktop/Emilia_Exam_Report_Card_App_Working/venv/bin/python3';
+        djangoProcess = spawn(pythonPath, [djangoPath, 'runserver', '--noreload', '127.0.0.1:8000'], {
+            cwd: path.join(__dirname, 'django_app'),
+            env: { ...process.env, DJANGO_SETTINGS_MODULE: 'emilia_report.settings' }
+        });
     }
     
     if (djangoProcess) {
@@ -54,10 +60,9 @@ function createWindow() {
         backgroundColor: '#f5f5f5'
     });
     
-    // Show loading screen
     mainWindow.loadURL(`data:text/html,
         <html>
-            <body style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;margin:0;">
+            <body style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;background:#f5f5f5;">
                 <div style="text-align:center;">
                     <h2>Emilia Report Card Maker</h2>
                     <p>Loading... Please wait</p>
@@ -67,9 +72,8 @@ function createWindow() {
         </html>
     `);
     
-    // Wait 8 seconds then load the app
     setTimeout(() => {
-        console.log('Loading app in window...');
+        console.log('Loading app...');
         mainWindow.loadURL('http://127.0.0.1:8000').catch(err => {
             console.error('Failed to load:', err);
             mainWindow.loadURL('data:text/html,<html><body style="display:flex;justify-content:center;align-items:center;height:100vh;"><h2>Error</h2><p>Could not start server. Please restart the app.</p></body></html>');
@@ -88,7 +92,12 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
     if (djangoProcess) {
-        djangoProcess.kill();
+        console.log('Shutting down Django...');
+        if (process.platform === 'win32') {
+            spawn('taskkill', ['/pid', djangoProcess.pid, '/f', '/t'], { shell: true });
+        } else {
+            process.kill(-djangoProcess.pid, 'SIGKILL');
+        }
     }
     app.quit();
 });
