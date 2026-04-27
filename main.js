@@ -1,109 +1,98 @@
 const { app, BrowserWindow } = require('electron');
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 
 let djangoProcess = null;
 let mainWindow = null;
 
-function startDjango() {
-    console.log('Starting Django...');
-    console.log('Platform:', process.platform);
-    
-    const isWindows = process.platform === 'win32';
-    const djangoPath = path.join(__dirname, 'django_app', 'manage.py');
-    
-    if (isWindows) {
-        // Windows: Use python directly with proper shell
-        const pythonCmd = 'python';
-        const djangoDir = path.join(__dirname, 'django_app');
-        
-        djangoProcess = spawn(pythonCmd, [djangoPath, 'runserver', '--noreload', '127.0.0.1:8000'], {
-            cwd: djangoDir,
-            env: { ...process.env, DJANGO_SETTINGS_MODULE: 'emilia_report.settings' },
-            shell: true,
-            detached: false
-        });
-    } else {
-        // Mac: Use the virtual environment python
-        const pythonPath = '/Users/mac/Desktop/Emilia_Exam_Report_Card_App_Working/venv/bin/python3';
-        djangoProcess = spawn(pythonPath, [djangoPath, 'runserver', '--noreload', '127.0.0.1:8000'], {
-            cwd: path.join(__dirname, 'django_app'),
-            env: { ...process.env, DJANGO_SETTINGS_MODULE: 'emilia_report.settings' }
-        });
-    }
-    
-    if (djangoProcess) {
-        djangoProcess.stdout.on('data', (data) => {
-            console.log(`Django: ${data}`);
-        });
-        
-        djangoProcess.stderr.on('data', (data) => {
-            console.log(`Django stderr: ${data}`);
-        });
-        
-        djangoProcess.on('error', (err) => {
-            console.error('Failed to start Django:', err);
-        });
+function isPythonInstalled() {
+    try {
+        require('child_process').execSync('python --version', { stdio: 'pipe' });
+        return true;
+    } catch (error) {
+        return false;
     }
 }
 
-function createWindow() {
-    mainWindow = new BrowserWindow({
-        width: 1280,
-        height: 800,
-        webPreferences: {
-            nodeIntegration: false,
-            contextIsolation: true
-        },
-        title: "Emilia Report Card Maker",
-        show: true,
-        backgroundColor: '#f5f5f5'
-    });
+function installPythonAndContinue() {
+    console.log('Python not found. Installing...');
     
     mainWindow.loadURL(`data:text/html,
         <html>
             <body style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;background:#f5f5f5;">
                 <div style="text-align:center;">
                     <h2>Emilia Report Card Maker</h2>
-                    <p>Loading... Please wait</p>
-                    <p style="font-size:12px;color:#888;">Starting server...</p>
+                    <p style="color:#0066cc;">⚙️ Installing Python... Please wait 2-3 minutes</p>
+                    <p style="font-size:12px;color:#888;">This is a one-time setup</p>
+                    <progress style="width:300px;"></progress>
                 </div>
             </body>
         </html>
     `);
     
-    setTimeout(() => {
-        console.log('Loading app...');
-        mainWindow.loadURL('http://127.0.0.1:8000').catch(err => {
-            console.error('Failed to load:', err);
-            mainWindow.loadURL('data:text/html,<html><body style="display:flex;justify-content:center;align-items:center;height:100vh;"><h2>Error</h2><p>Could not start server. Please restart the app.</p></body></html>');
-        });
-    }, 8000);
+    const installerPath = path.join(__dirname, 'python-installer.exe');
+    const pythonUrl = 'https://www.python.org/ftp/python/3.11.9/python-3.11.9.exe';
     
-    mainWindow.on('closed', () => {
-        mainWindow = null;
+    const https = require('https');
+    const file = fs.createWriteStream(installerPath);
+    
+    https.get(pythonUrl, (response) => {
+        response.pipe(file);
+        file.on('finish', () => {
+            file.close();
+            const install = spawn(installerPath, ['/quiet', 'InstallAllUsers=1', 'PrependPath=1'], { shell: true, detached: true });
+            install.on('close', (code) => {
+                fs.unlinkSync(installerPath);
+                setTimeout(() => { startDjango(); }, 3000);
+            });
+        });
+    }).on('error', (err) => {
+        console.error('Download failed:', err);
     });
 }
 
+function startDjango() {
+    console.log('Starting Django...');
+    const isWindows = process.platform === 'win32';
+    const djangoPath = path.join(__dirname, 'django_app', 'manage.py');
+    const djangoDir = path.join(__dirname, 'django_app');
+    const pythonCmd = isWindows ? 'python' : '/Users/mac/Desktop/Emilia_Exam_Report_Card_App_Working/venv/bin/python3';
+    
+    djangoProcess = spawn(pythonCmd, [djangoPath, 'runserver', '--noreload', '127.0.0.1:8000'], {
+        cwd: djangoDir,
+        env: { ...process.env, DJANGO_SETTINGS_MODULE: 'emilia_report.settings' },
+        shell: true
+    });
+    
+    djangoProcess.stdout.on('data', (data) => {
+        console.log(`Django: ${data}`);
+        if (data.includes('Starting development server')) {
+            setTimeout(() => { mainWindow.loadURL('http://127.0.0.1:8000'); }, 1000);
+        }
+    });
+    
+    djangoProcess.stderr.on('data', (data) => { console.log(`Django stderr: ${data}`); });
+    djangoProcess.on('error', (err) => {
+        if (process.platform === 'win32' && !isPythonInstalled()) { installPythonAndContinue(); }
+    });
+}
+
+function createWindow() {
+    mainWindow = new BrowserWindow({ width: 1280, height: 800, webPreferences: { nodeIntegration: false, contextIsolation: true }, title: "Emilia Report Card Maker", show: true, backgroundColor: '#f5f5f5' });
+    mainWindow.loadURL(`data:text/html,<html><body style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;background:#f5f5f5;"><div style="text-align:center;"><h2>Emilia Report Card Maker</h2><p>Loading... Please wait</p><p style="font-size:12px;color:#888;">Starting server...</p></div></body></html>`);
+}
+
 app.whenReady().then(() => {
-    startDjango();
+    if (process.platform === 'win32' && !isPythonInstalled()) { installPythonAndContinue(); } 
+    else { startDjango(); }
     createWindow();
 });
 
 app.on('window-all-closed', () => {
     if (djangoProcess) {
-        console.log('Shutting down Django...');
-        if (process.platform === 'win32') {
-            spawn('taskkill', ['/pid', djangoProcess.pid, '/f', '/t'], { shell: true });
-        } else {
-            process.kill(-djangoProcess.pid, 'SIGKILL');
-        }
+        if (process.platform === 'win32') { spawn('taskkill', ['/pid', djangoProcess.pid, '/f', '/t'], { shell: true }); } 
+        else { djangoProcess.kill(); }
     }
     app.quit();
-});
-
-app.on('activate', () => {
-    if (mainWindow === null) {
-        createWindow();
-    }
 });
